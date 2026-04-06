@@ -48,11 +48,11 @@ def predict(file_path):
 # ─── Your 5 audio files ──────────────────────────────────────────────
 # 👇 Put your actual filenames here
 audio_files = [
-    r"C:\Users\ADMIN\Desktop\forest proj\audio1.wav",
-    r"C:\Users\ADMIN\Desktop\forest proj\audio2.wav",
-    r"C:\Users\ADMIN\Desktop\forest proj\audio3.wav",
-    r"C:\Users\ADMIN\Desktop\forest proj\audio4.wav",
-    r"C:\Users\ADMIN\Desktop\forest proj\audio5.wav",
+    r"C:\Users\ANANYA RAO\Downloads\0959-6ce8-41a2-93d8-88711bbb1b55.wav",
+    r"C:\Users\ANANYA RAO\Downloads\eeac-d0ca-435c-ba33-e8d223d7eeb5.wav",
+    r"C:\Users\ANANYA RAO\Downloads\17d7-ee32-42e6-a8ca-4010840d708c.wav",
+    r"C:\Users\ANANYA RAO\Downloads\4ef2-1a91-4c52-8f5c-ae631e54b3d0.wav",
+    r"C:\Users\ANANYA RAO\Downloads\c2ce-1eab-4352-a5a9-efe2b50ee004.wav",
 ]
 
 # ─── Run on all files ────────────────────────────────────────────────
@@ -61,4 +61,3 @@ for f in audio_files:
         predict(f)
     except Exception as e:
         print(f"  ❌ Error on {f}: {e}\n")
-        
