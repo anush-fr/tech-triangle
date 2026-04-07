@@ -643,6 +643,85 @@
     </style>
   </head>
   <body>
+    <!-- Socket.io client -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <script>
+      // Connect to Node.js
+      const socket = io("http://localhost:3000");
+
+      socket.on("sensor-data", (data) => {
+        console.log("Live data:", data);
+
+        // Update dB meter
+        document.getElementById("dbVal").textContent = data.db;
+        document.getElementById("dbFill").style.width = data.db + "%";
+
+        // Update classification bars
+        const iconMap = {
+          chainsaw: { icon: "🪚", name: "CHAINSAW" },
+          gunshot: { icon: "🔫", name: "GUNSHOT" },
+          vehicle: { icon: "🚗", name: "VEHICLE" },
+          animal: { icon: "🐾", name: "ANIMAL" },
+          ambient: { icon: "🌿", name: "AMBIENT / SAFE" },
+        };
+
+        document.querySelectorAll(".cls-item").forEach((el) => {
+          const name = el.querySelector(".cls-name").textContent.toLowerCase();
+          const isMatch = name.includes(data.type);
+          el.classList.toggle("active", isMatch);
+          el.querySelector(".cls-fill").style.width = isMatch
+            ? data.confidence + "%"
+            : "2%";
+          el.querySelector(".cls-pct").textContent = isMatch
+            ? data.confidence + "%"
+            : "—";
+        });
+
+        // Add to threat log
+        const log = document.getElementById("alertsLog");
+        const severity =
+          data.confidence > 80 ? "high" : data.confidence > 60 ? "med" : "low";
+        const now = new Date().toLocaleTimeString("en-IN", { hour12: false });
+        const el = document.createElement("div");
+        el.className = `log-entry ${severity}`;
+        el.innerHTML = `
+      <div class="log-time">${now} · ${data.node}</div>
+      <div class="log-type">${iconMap[data.type]?.icon} ${data.type.toUpperCase()} DETECTED</div>
+      <div>Conf: ${data.confidence}% · ${data.raw}</div>`;
+        log.insertBefore(el, log.firstChild);
+      });
+
+      // ---- FILE UPLOAD TO NODE.JS ---- //
+      function analyzeAudio(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("http://localhost:3000/analyze", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => console.log("Result:", data))
+          .catch((err) => console.error("Error:", err));
+      }
+    </script>
+
+    <!-- Upload button (add anywhere in your HTML) -->
+    <input
+      type="file"
+      id="audioUpload"
+      accept=".wav"
+      style="display: none"
+      onchange="analyzeAudio(this.files[0])"
+    />
+    <button
+      onclick="document.getElementById('audioUpload').click()"
+      class="btn btn-green"
+      style="position: fixed; bottom: 24px; right: 24px"
+    >
+      + UPLOAD AUDIO
+    </button>
     <!-- HEADER -->
     <header>
       <div class="logo">
